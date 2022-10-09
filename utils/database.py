@@ -52,6 +52,7 @@ def add_book(name, author):
 
 def get_all_books():
     try:
+        #
         # con = sqlite3.connect('bookdata.db')
         # cursor = con.cursor()
         con = connect_to_db()
