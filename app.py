@@ -1,5 +1,4 @@
 from utils import database
-from domain_objects import book as do
 
 USER_CHOICE = """
 Enter:
@@ -16,45 +15,31 @@ def add_book():
     try:
         name = input("Enter book name: ")
         author = input("Enter author's name: ")
-        read = input("Did you read this book? (Y/N) : ")
+        database.add_book(name, author)
 
-        new_book = do.Book(name, author, read)
-        successful_add = database.add_book()
     except ValueError as errMsg:
         print(errMsg)
 
 
 def list_books():
-    list_of_books = database.list_books()
-    for book in list_of_books:
-        print(book)
+    books = database.get_all_books()
+    for book in books:
+        read = 'Yes' if book['read'] else 'No'
+        print(f"{book['name']} by {book['author']}, read: {read}")
 
 
 def mark_book_read():
-    try:
-        name = input("Enter name of book to mark as read: ")
-        if not isinstance(name, str):
-            raise ValueError("Name cannot be numeric")
-        else:
-            database.mark_book_read(name)
-            print(f"{name} has been marked as read")
-    except ValueError as errMsg:
-        print(errMsg)
+    name = input("Enter the name of the book you just finished reading: ")
+    database.mark_book_as_read(name)
 
 
 def delete_book():
-    try:
-        name = input("Enter name of book to delete: ")
-        if not isinstance(name, str):
-            raise ValueError("Name cannot be numeric")
-        else:
-            database.delete_book(name)
-            print(f"{name} has been deleted")
-    except ValueError as errMsg:
-        print(errMsg)
+    name = input("enter the name of the book you wish to delete: ")
+    database.delete_book(name)
 
 
 def menu():
+    database.create_book_table()
     user_input = input(USER_CHOICE)
 
     while user_input.lower() != 'q':
@@ -68,7 +53,10 @@ def menu():
             elif user_input == 'd':
                 delete_book()
             else:
-                print("Error, unknown operation")
+                print("Error, unknown operation try again")
+
+            user_input = input(USER_CHOICE)
+
         except ValueError as errMsg:
             print(f"Data Error: {errMsg}")
         except Exception as genErrMsg:

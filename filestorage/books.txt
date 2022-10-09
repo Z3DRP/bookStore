@@ -1,0 +1,3 @@
+Design Patterns Explained|Alan Shallowway|1
+Skills for Agile Developers| I forgot who|1
+Python API Development|Packt Publishing|0

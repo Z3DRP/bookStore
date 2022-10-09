@@ -1,60 +1,55 @@
-from multipledispatch import dispatch
-from domain_objects import book as do
+import json
+"""
+json file storage
+format:
+[
+ {
+    'name': 'Design Patterns Explained',
+    'author': 'Alan Shalloway',
+    'read': True
+ }
+]
+"""
+books_file = 'books.json'
 
-"""in memoory list db for now"""
-books = []
+
+def create_book_table():
+    # this will initialize the json file with a empty list or will throw error
+    # if the json file is empty
+    with open(books_file, 'w') as file:
+        json.dump([], file)
 
 
-@staticmethod
-@dispatch(str, str)
+def get_all_books():
+    with open(books_file, 'r') as file:
+        return json.load(file)
+
+
+def _save_all_books(books):
+    with open(books_file, 'w') as file:
+        json.dump(books, file)
+
+
 def add_book(name, author):
-    original_len = len(books)
-    try:
-        new_book = do.Book(name, author)
-        # books.append({'name': name, 'author': author, 'read': False})
-        books.append(new_book)
-    except ValueError:
-        raise ValueError("A error occurred while inserting book")
-    if len(books) > original_len:
-        return True
-    else:
-        return False
+    books = get_all_books()
+    books.append({'name': name, 'author': author, 'read': False})
+    _save_all_books(books)
 
 
-@staticmethod
-@dispatch(do.Book)
-def add_book(new_book):
-    original_len = len(books)
-    try:
-        books.append(new_book)
-    except ValueError:
-        raise ValueError("A error occurred while inserting book")
-    if len(books) > original_len:
-        return True
-    else:
-        return False
+def mark_book_as_read(name):
+    books = get_all_books()
+    for book in books:
+        if book['name'].lower() == name.lower():
+            book['read'] = True
+    _save_all_books(books)
 
 
-@staticmethod
-def list_books():
-    return books
-
-
-@staticmethod
-def mark_book_read(name):
-    try:
-        for book in books:
-            if book['name'] == name:
-                book['read'] = True
-    except ValueError:
-        raise ValueError("Error, book not found")
-
-
-@staticmethod
 def delete_book(name):
-    try:
-        for old_book in books:
-            if old_book['name'] == name:
-                books.remove(old_book)
-    except ValueError:
-        raise ValueError("Error, book was not found")
+    # if list comp does not work with method call then use version below it
+    books = [
+        book for book in get_all_books()
+        if book['name'].lower() != name.lower()
+    ]
+    # books = get_all_books()
+    # books = [book for book in books if book['name'].lower != name.lower()]
+    _save_all_books(books)
