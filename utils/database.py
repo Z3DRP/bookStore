@@ -10,6 +10,7 @@ format:
  }
 ]
 """
+
 books_file = 'books.json'
 
 
