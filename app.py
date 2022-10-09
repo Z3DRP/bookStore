@@ -16,45 +16,40 @@ def add_book():
     try:
         name = input("Enter book name: ")
         author = input("Enter author's name: ")
-        read = input("Did you read this book? (Y/N) : ")
-
-        new_book = do.Book(name, author, read)
-        successful_add = database.add_book()
+        database.add_book(name, author)
     except ValueError as errMsg:
         print(errMsg)
 
 
 def list_books():
-    list_of_books = database.list_books()
-    for book in list_of_books:
-        print(book)
+    try:
+        books = database.get_all_books()
+        for book in books:
+            # python treats 1 and 0 as true and flase
+            read = 'Yes' if book['read'] else 'No'
+            print(f"{book['name']} by {book['author']}, read: {read}")
+    except ValueError as ve:
+        print(ve)
 
 
 def mark_book_read():
     try:
-        name = input("Enter name of book to mark as read: ")
-        if not isinstance(name, str):
-            raise ValueError("Name cannot be numeric")
-        else:
-            database.mark_book_read(name)
-            print(f"{name} has been marked as read")
+        name = input("Enter the name of the book you just finished reading: ")
+        database.mark_book_read(name)
     except ValueError as errMsg:
         print(errMsg)
 
 
 def delete_book():
     try:
-        name = input("Enter name of book to delete: ")
-        if not isinstance(name, str):
-            raise ValueError("Name cannot be numeric")
-        else:
-            database.delete_book(name)
-            print(f"{name} has been deleted")
+        name = input("Enter the name of the book you wish to delete: ")
+        database.delete_book(name)
     except ValueError as errMsg:
         print(errMsg)
 
 
 def menu():
+    database.create_book_table()
     user_input = input(USER_CHOICE)
 
     while user_input.lower() != 'q':
@@ -69,6 +64,8 @@ def menu():
                 delete_book()
             else:
                 print("Error, unknown operation")
+            user_input = input(USER_CHOICE)
+
         except ValueError as errMsg:
             print(f"Data Error: {errMsg}")
         except Exception as genErrMsg:
